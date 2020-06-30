@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 from pyts.image import GramianAngularField
 
-#grab timeseries image make the charts 2
+#Pass timeseries and create a Gramian Angular Field image
+
+#grab timeseries image and make the charts
 def create_gaf(ts, img_size = 24):
     data = dict()
     data['gasf'] = []
