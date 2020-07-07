@@ -28,5 +28,5 @@ def create_images(X_plots, image_name, image_matrix = (2, 2)):
     images = X_plots
     for image, ax in zip(images, grid):
         ax.imshow(image, cmap='rainbow', origin='lower')
-    fig.savefig('GramianAnagularField\\{}.png'.format(image_name))
+    fig.savefig('GramianAnagularFields\\{}.png'.format(image_name))
 
