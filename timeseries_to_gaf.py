@@ -1,34 +1,35 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid
+from mpl_toolkits.axes_grid1 import ImageGrid, AxesGrid
 from pyts.image import GramianAngularField
+import pandas as pd
 
 #Pass timeseries and create a Gramian Angular Field image
 
 #grab timeseries image and make the charts
-def create_gaf(ts, img_size = 24):
+def create_gaf(ts): #col_num
     data = dict()
-    data['gasf'] = []
-    data['X_gadf'] = []
-    gasf = GramianAngularField(image_size=img_size, method='summation')
-    data['gasf'].append(gasf.fit_transform(ts))
-    gadf = GramianAngularField(image_size=img_size, method='difference')
-    data['gadf'].append(gadf.fit_transform(ts))
+    # gasf = GramianAngularField(method='summation', image_size=20)
+    # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
+    gadf = GramianAngularField(method='difference', image_size=20)
+    data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T) [0] # ts.T)
+    # create_images([data['gasf'][0], data['gasf'][0], data['gasf'][0], data['gasf'][0]], 'testo')
     return data
 
 #create images of the bundle that we pass
-def create_images(X_plots, image_name, image_matrix = (2, 2)):
-    fig = plt.figure(figsize=(img * 4 for img, in image_matrix))
-    grid = ImageGrid(fig, 111,
+def create_images(X_plots, image_name, image_matrix=(2, 2)):
+    fig = plt.figure(figsize=[img * 4 for img in image_matrix])
+    grid = ImageGrid(fig,
+                     111,
+                     axes_pad=0,
                      nrows_ncols=image_matrix,
-                     axes_pad=0.15,
                      share_all=True,
-                     cbar_location="right",
-                     cbar_mode="single",
-                     cbar_size="7%",
-                     cbar_pad=0.3,
                      )
     images = X_plots
     for image, ax in zip(images, grid):
+        ax.set_xticks([])
+        ax.set_yticks([])
         ax.imshow(image, cmap='rainbow', origin='lower')
-    fig.savefig('GramianAnagularFields\\{}.png'.format(image_name))
 
+    fig.savefig('GramianAnagularFields\\{}.png'.format(image_name))
