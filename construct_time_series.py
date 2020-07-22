@@ -15,6 +15,6 @@ if __name__ == "__main__":
     df = pd.read_csv(PATH + ive_data, names=col_name, header=None)
     df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], infer_datetime_format=True)
     time_series =  {}
-    for tg in ['30min', '2h', '4h', '1d']:
+    for tg in ['1h', '8h']: #'2h', '4h', '1d']:
         frequency_format(df, tg).to_csv(PATH + 'ts_{0}_{1}.csv'.format('ive', tg), index=False)
 

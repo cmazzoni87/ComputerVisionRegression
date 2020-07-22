@@ -13,12 +13,12 @@ def create_gaf(ts): #col_num
     # gasf = GramianAngularField(method='summation', image_size=20)
     # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
     gadf = GramianAngularField(method='difference', image_size=20)
-    data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T) [0] # ts.T)
+    data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0] # ts.T)
     # create_images([data['gasf'][0], data['gasf'][0], data['gasf'][0], data['gasf'][0]], 'testo')
     return data
 
 #create images of the bundle that we pass
-def create_images(X_plots, image_name, image_matrix=(2, 2)):
+def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
     fig = plt.figure(figsize=[img * 4 for img in image_matrix])
     grid = ImageGrid(fig,
                      111,
@@ -32,4 +32,6 @@ def create_images(X_plots, image_name, image_matrix=(2, 2)):
         ax.set_yticks([])
         ax.imshow(image, cmap='rainbow', origin='lower')
 
-    fig.savefig('GramianAnagularFields\\{}.png'.format(image_name))
+    fig.savefig('GramianAnagularFields\\{}.png'.format(destination + '\\' + image_name))
+    plt.close(fig)
+

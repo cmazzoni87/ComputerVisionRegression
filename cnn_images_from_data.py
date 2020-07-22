@@ -17,10 +17,27 @@ def split_dataframes(df, splits):
         list_df = list_df[:-2]
     return list_df
 
+# I SHOULD ADD COMPLEXITY HERE, FOR NOW NEED THE MACHINE TO LEARN PATTERS ON IT'S OWN REGARDLESS OF TECHNICAL ANALYSIS
+def buy_hold_sell(time_piece, entire_df, windows=(10, 20)):
+    # moving_ave_ten = entire_df.rolling(window=windows[0]).mean()
+    moving_ave_twy = entire_df.rolling(window=windows[1]).mean().fillna(method='bfill')
+    # moving_ave_ten = moving_ave_ten.fillna(method='bfill')
+    # moving_ave_twy = moving_ave_twy.fillna(method='bfill')
+    last_day = time_piece.index[-1]
+    value_at_time = moving_ave_twy.loc[last_day]
+    if time_piece.iloc[-1] < value_at_time:
+        buy_sell_hold = 'BUY'
+    else:    # time_piece.iloc[-1] > value_at_time:
+        buy_sell_hold = 'SELL'
+    # else:
+    #     buy_sell_hold = 'HOLD'
+    return buy_sell_hold
+
+
 if __name__ == "__main__":
     rows_size = 20
     first_file = 'ts_ive_1d.csv'
-    files_relationship = ['ts_ive_4h.csv', 'ts_ive_2h.csv', 'ts_ive_30min.csv']
+    files_relationship = ['ts_ive_8h.csv', 'ts_ive_4h.csv', 'ts_ive_2h.csv']
     daily_data = pd.read_csv(PATH + first_file, index_col='DateTime',
                              dtype={'Volume': float, 'Open': float, 'High': float, 'Low':float})['Open']
     tag_date = first_file.split('_')[2].split('.')[0]
@@ -33,6 +50,7 @@ if __name__ == "__main__":
         min_date = df.index.min()
         max_date = df.index.max()
         full_timeseries_gaf = {}
+        invest_decition = buy_hold_sell(time_piece=df, entire_df=daily_data)
         full_timeseries_gaf[min_date + ' ' + max_date] = [[create_gaf(df)]]
         for data in interval_raw:
             data_slice = data.loc[(data.index > min_date) & (data.index < max_date)]
@@ -43,8 +61,11 @@ if __name__ == "__main__":
             for r in full_timeseries_gaf[min_date + ' ' + max_date][1]:
                 for g in full_timeseries_gaf[min_date + ' ' + max_date][2]:
                     for q in full_timeseries_gaf[min_date + ' ' + max_date][3]:
-                        ttg.create_images([i, r, g, q], '{0}_{1}_{2}'.format(min_date, max_date, num))
-                        print('COMPLETED GENERATING GAF FOR {}'.format('{0}_{1}_{2}'.format(min_date, max_date, num)))
+                        ttg.create_images(X_plots=[i, r, g, q],
+                                          image_name='{0}_{1}_{2}'.format(min_date, max_date, num),
+                                          destination=invest_decition)
+                        print('GENERATING GAF FOR {}'.format('{0}_{1}_{2}'.format(min_date, max_date, num)))
                         num += 1
+        print('COMPLETED GENERATING GAF FOR {0}, TOTAL NUM: {1}'.format('{0}_{1}'.format(min_date, max_date), num))
         full_timeseries_gaf[min_date + ' ' + max_date] = None
 
