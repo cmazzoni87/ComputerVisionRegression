@@ -9,6 +9,10 @@ import pandas as pd
 
 #grab timeseries image and make the charts
 def create_gaf(ts): #col_num
+    """
+    :param ts:
+    :return:
+    """
     data = dict()
     # gasf = GramianAngularField(method='summation', image_size=20)
     # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
@@ -19,6 +23,13 @@ def create_gaf(ts): #col_num
 
 #create images of the bundle that we pass
 def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
+    """
+    :param X_plots:
+    :param image_name:
+    :param destination:
+    :param image_matrix:
+    :return:
+    """
     fig = plt.figure(figsize=[img * 4 for img in image_matrix])
     grid = ImageGrid(fig,
                      111,

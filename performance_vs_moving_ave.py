@@ -5,6 +5,10 @@ PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\TimeSerie
 
 
 def run_moving_ave(df):
+    """
+    :param df:
+    :return:
+    """
     data = df
     data['move_ave_20'] = data['Open'].rolling(window=20).mean().fillna(method='bfill')
     data['move_ave_50'] = data['Open'].rolling(window=50).mean().fillna(method='bfill')
@@ -12,6 +16,10 @@ def run_moving_ave(df):
 
 
 def buy_hold_sell(df):
+    """
+    :param df:
+    :return:
+    """
     data = df
     sigPriceBuy = []
     sigPriceSell = []

@@ -10,10 +10,19 @@ PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\TimeSerie
 
 
 def create_gaf(df):
+    """
+    :param df:
+    :return:
+    """
     return ttg.create_gaf(df)['gadf']
 
 
 def split_dataframes(df, splits):
+    """
+    :param df:
+    :param splits:
+    :return:
+    """
     list_df = np.split(df, range(splits, len(df), splits))
     last_df_size = list_df[-1].shape[0]
     if last_df_size < 20:
@@ -23,22 +32,36 @@ def split_dataframes(df, splits):
 
 # I SHOULD ADD COMPLEXITY HERE, FOR NOW NEED THE MACHINE TO LEARN PATTERS ON IT'S OWN REGARDLESS OF TECHNICAL ANALYSIS
 def buy_hold_sell(time_piece, entire_df, windows=(10, 20)):
+    """
+    :param time_piece:
+    :param entire_df:
+    :param windows:
+    :return:
+    """
     # moving_ave_ten = entire_df.rolling(window=windows[0]).mean()
-    moving_ave_twy = entire_df.rolling(window=windows[1]).mean().fillna(method='bfill')
+    # moving_ave_twy = entire_df.rolling(window=windows[1]).mean().fillna(method='bfill')
     # moving_ave_ten = moving_ave_ten.fillna(method='bfill')
     # moving_ave_twy = moving_ave_twy.fillna(method='bfill')
-    last_day = time_piece.index[-1]
-    value_at_time = moving_ave_twy.loc[last_day]
-    if time_piece.iloc[-1] < value_at_time:
-        buy_sell_hold = 'BUY'
-    else:    # time_piece.iloc[-1] > value_at_time:
+    when_selling = time_piece[-1]
+    when_buying = time_piece[0]
+    # value_at_time = moving_ave_twy.loc[last_day]
+    # if time_piece.iloc[-1] < value_at_time:
+    if when_buying < when_selling:
         buy_sell_hold = 'SELL'
+    else:    # time_piece.iloc[-1] > value_at_time:
+        buy_sell_hold = 'BUY'
     # else:
     #     buy_sell_hold = 'HOLD'
     return buy_sell_hold
 
 
 def generate_time_series_image(intervals, inter_raw, daily_df):
+    """
+    :param intervals:
+    :param inter_raw:
+    :param daily_df:
+    :return:
+    """
     interval_raw = inter_raw
     time_intervals = intervals
     daily = daily_df
@@ -68,6 +91,11 @@ def generate_time_series_image(intervals, inter_raw, daily_df):
 
 
 def split_time_series(init_df, raw_dfs):
+    """
+    :param init_df:
+    :param raw_dfs:
+    :return:
+    """
     daily_df = pd.read_csv(PATH + init_df, index_col='DateTime',
                              dtype={'Volume': float, 'Open': float, 'High': float, 'Low': float})['Open']
     # split_interval = first_file.split('_')[2].split('.')[0]

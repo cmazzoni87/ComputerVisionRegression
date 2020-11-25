@@ -4,6 +4,11 @@ import dask.dataframe as dd
 PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\TimeSeries\\'
 
 def frequency_format(df, frequency):
+    """
+    :param df:
+    :param frequency:
+    :return:
+    """
     group_dt = df.groupby(pd.Grouper(key='DateTime', freq=frequency)).sum().reset_index()
     group_dt['Open'] = group_dt['Open'].replace(to_replace=0, method='ffill')
     return group_dt
