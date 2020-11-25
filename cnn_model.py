@@ -80,7 +80,8 @@ summary = "\n".join(stringlist)
 logging = ['{0}: {1}'.format(key, val[-1]) for key, val in history.history.items()]
 log = 'Results:\n' + '\n'.join(logging)
 
-model.save_weights(PATH + 'Models\\computer_vision_regression_{}.h5'.format(timestamp))
+model.save_weights(PATH + 'Models\\computer_vision_regression_weights_{}.h5'.format(timestamp))
+model.save(PATH + 'Models\\computer_vision_regression_model_{}.h5'.format(timestamp))
 f = open(PATH + 'Models\\computer_vision_regression_summary_{}.txt'.format(timestamp), 'w')
 f.write("EPOCHS: {0}\nSteps per epoch: {1}\nValidation steps: {2}\nVal Split:{3}\nLearning RT:{5}\n\n\n{4}\n\n"
         "=========TRAINING LOG========\n{6}".format(EPOCHS, steps_per_epoch, validation_steps, SPLIT, summary,LR, log))
@@ -93,7 +94,7 @@ for fn in uploaded:
     x = np.expand_dims(x, axis=0)
     images = np.vstack([x])
     classes = model.predict(images, batch_size=10)
-    if classes[0] > 0.5:
+    if classes[0] >= 1:
         print("{0} is BUY with {1}".format(fn, classes[0]))
     else:
         print("{0} is SELL with {1}".format(fn, classes[0]))
