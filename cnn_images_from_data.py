@@ -14,7 +14,7 @@ def create_gaf(df):
     :param df:
     :return:
     """
-    return ttg.create_gaf(df)['gadf']
+    return ttg.create_gaf(df, rows_size)['gadf']
 
 
 def split_dataframes(df, splits):
@@ -25,8 +25,8 @@ def split_dataframes(df, splits):
     """
     list_df = np.split(df, range(splits, len(df), splits))
     last_df_size = list_df[-1].shape[0]
-    if last_df_size < 20:
-        list_df = list_df[:-2]
+    if last_df_size < rows_size:  #20
+        list_df = list_df[:-1]
     return list_df
 
 
@@ -38,17 +38,11 @@ def buy_hold_sell(time_piece, entire_df, windows=(10, 20)):
     :param windows:
     :return:
     """
-    # moving_ave_ten = entire_df.rolling(window=windows[0]).mean()
-    # moving_ave_twy = entire_df.rolling(window=windows[1]).mean().fillna(method='bfill')
-    # moving_ave_ten = moving_ave_ten.fillna(method='bfill')
-    # moving_ave_twy = moving_ave_twy.fillna(method='bfill')
     when_selling = time_piece[-1]
     when_buying = time_piece[0]
-    # value_at_time = moving_ave_twy.loc[last_day]
-    # if time_piece.iloc[-1] < value_at_time:
     if when_buying < when_selling:
         buy_sell_hold = 'SELL'
-    else:    # time_piece.iloc[-1] > value_at_time:
+    else:
         buy_sell_hold = 'BUY'
     # else:
     #     buy_sell_hold = 'HOLD'
@@ -108,7 +102,7 @@ def split_time_series(init_df, raw_dfs):
 
 
 if __name__ == "__main__":
-    rows_size = 20
+    rows_size = 5
     first_file = 'ts_ive_1d.csv'
     files_relationship = ['ts_ive_8h.csv', 'ts_ive_4h.csv', 'ts_ive_2h.csv']
     daily_data, first_interval_unedited, intervals_unedited = split_time_series(first_file, files_relationship)

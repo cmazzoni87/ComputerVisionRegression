@@ -13,14 +13,6 @@ callback  = tf.keras.callbacks.EarlyStopping(
     baseline=None, restore_best_weights=False
 )
 
-PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\'
-IMAGES_PATH = PATH + 'GramianAnagularFields\\'
-EPOCHS = 10
-SPLIT = 0.2
-LR = 0.0005
-steps_per_epoch = 8 # 2000 // train_generator.batch_size
-validation_steps = 8 # 800 // validation_generator.batch_size
-
 model = tf.keras.models.Sequential([
     # Note the input shape is the desired size of the image 300x300 with 3 bytes color
     # This is the first convolution
@@ -32,27 +24,37 @@ model = tf.keras.models.Sequential([
     # The third convolution
     tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Dropout(0.1),
     # The fourth convolution
     tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Dropout(0.1),
     # The fifth convolution
     tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Dropout(0.1),
     # Flatten the results to feed into a DNN
     tf.keras.layers.Flatten(),
     # 512 neuron hidden layer
     tf.keras.layers.Dense(512, activation='relu'),
-    tf.keras.layers.Dropout(0.4),
-    # # Only 1 output neuron. It will contain a value from 0-1 where 0 for 1 class ('horses') and 1 for the other ('humans')
+    tf.keras.layers.Dropout(0.2),
+    # # Only 1 output neuron. It will contain a value from 0-1 where 0 for 1 class ('buy') and 1 for the other ('sell')
     tf.keras.layers.Dense(1, activation='sigmoid')])
-model.compile(optimizer=Adam(lr=LR), loss='binary_crossentropy', metrics=['acc'])
 
+PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\'
+IMAGES_PATH = PATH + 'GramianAnagularFields\\'
+EPOCHS = 4
+SPLIT = 0.3
+LR = 1e-4
+
+model.compile(optimizer=Adam(lr=LR), loss='binary_crossentropy', metrics=['acc'])
 # All images will be rescaled by 1./255
 train_validate_datagen = ImageDataGenerator(rescale=1/255, validation_split=SPLIT) # set validation split
+
 train_generator = train_validate_datagen.flow_from_directory(
     IMAGES_PATH,
     target_size=(300, 300),
-    batch_size=128,
+    batch_size=64,
     class_mode='binary',
     subset='training') # set as training data
 
@@ -62,6 +64,9 @@ validation_generator = train_validate_datagen.flow_from_directory(
     batch_size=32,
     class_mode='binary',
     subset='validation') # set as validation data
+
+steps_per_epoch = train_generator.n // train_generator.batch_size
+validation_steps = validation_generator.n // validation_generator.batch_size
 
 history = model.fit_generator(
       train_generator,
