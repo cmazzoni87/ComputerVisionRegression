@@ -6,9 +6,9 @@ PATH = os.path.join(os.path.dirname(__file__), 'TimeSeries')
 
 def frequency_format(df, frequency):
     """
-    :param df:
-    :param frequency:
-    :return:
+    :param df: DataFrame
+    :param frequency: String time frequency used in method
+    :return: New grouped by time frequency DataFrame
     """
     group_dt = df.groupby(pd.Grouper(key='DateTime', freq=frequency)).sum().reset_index()
     group_dt['Open'] = group_dt['Open'].replace(to_replace=0, method='ffill')
