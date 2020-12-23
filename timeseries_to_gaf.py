@@ -7,8 +7,7 @@ import pandas as pd
 import os
 
 #Pass timeseries and create a Gramian Angular Field image
-
-#grab timeseries image and make the charts
+#Grab timeseries and draw the charts
 def create_gaf(ts, size): #col_num
     """
     :param ts:
@@ -19,7 +18,6 @@ def create_gaf(ts, size): #col_num
     # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
     gadf = GramianAngularField(method='difference', image_size=size)
     data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0] # ts.T)
-    # create_images([data['gasf'][0], data['gasf'][0], data['gasf'][0], data['gasf'][0]], 'testo')
     return data
 
 #create images of the bundle that we pass
