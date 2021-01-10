@@ -8,7 +8,7 @@ import os
 
 #Pass timeseries and create a Gramian Angular Field image
 #Grab timeseries and draw the charts
-def create_gaf(ts, size): #col_num
+def create_gaf(ts): #col_num
     """
     :param ts:
     :return:
@@ -16,7 +16,7 @@ def create_gaf(ts, size): #col_num
     data = dict()
     # gasf = GramianAngularField(method='summation', image_size=20)
     # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
-    gadf = GramianAngularField(method='difference', image_size=size)
+    gadf = GramianAngularField(method='difference', image_size=ts.shape[0])
     data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0] # ts.T)
     return data
 
@@ -42,8 +42,9 @@ def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
         ax.set_yticks([])
         ax.imshow(image, cmap='rainbow', origin='lower')
 
-    if not os.path.exists('GramianAnagularFields\\{}'.format(destination)):
-        os.makedirs('GramianAnagularFields\\{}'.format(destination))
-    fig.savefig('GramianAnagularFields\\{}.png'.format(destination + '\\' + image_name))
+    if not os.path.exists(os.path.join('GramianAnagularFields', destination)):
+        os.makedirs(os.path.join('GramianAnagularFields', destination))
+    repo = os.path.join('GramianAnagularFields', destination)
+    fig.savefig(os.path.join(repo, image_name))
     plt.close(fig)
 

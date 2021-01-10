@@ -1,4 +1,5 @@
 import tensorflow as tf
+import os
 from tensorflow.keras.optimizers import RMSprop, Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 # from tensorflow.keras.layers import Activation, Dropout, Flatten, Dense
@@ -6,7 +7,9 @@ import numpy as np
 from tensorflow.keras.preprocessing import image
 import glob
 import datetime as dt
-
+import os
+PATH_DOC = os.path.join(os.path.dirname(__file__), 'Documents')
+PATH_OUT = os.path.join(os.path.dirname(__file__), 'Output')
 
 callback  = tf.keras.callbacks.EarlyStopping(
     monitor='val_loss', min_delta=0, patience=1, verbose=0, mode='auto',
@@ -41,8 +44,9 @@ model = tf.keras.models.Sequential([
     # # Only 1 output neuron. It will contain a value from 0-1 where 0 for 1 class ('buy') and 1 for the other ('sell')
     tf.keras.layers.Dense(1, activation='sigmoid')])
 
-PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\'
-IMAGES_PATH = PATH + 'GramianAnagularFields\\'
+PATH = os.path.dirname(__file__)
+IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields')
+REPO = os.path.join(PATH , 'Models')
 EPOCHS = 4
 SPLIT = 0.3
 LR = 1e-4
@@ -85,14 +89,14 @@ summary = "\n".join(stringlist)
 logging = ['{0}: {1}'.format(key, val[-1]) for key, val in history.history.items()]
 log = 'Results:\n' + '\n'.join(logging)
 
-model.save_weights(PATH + 'Models\\computer_vision_regression_weights_{}.h5'.format(timestamp))
-model.save(PATH + 'Models\\computer_vision_regression_model_{}.h5'.format(timestamp))
-f = open(PATH + 'Models\\computer_vision_regression_summary_{}.txt'.format(timestamp), 'w')
+model.save_weights(os.path.join(REPO, 'computer_vision_regression_weights_{}.h5'.format(timestamp)))
+model.save(os.path.join(REPO, 'computer_vision_regression_model_{}.h5'.format(timestamp)))
+f = open(os.path.join(REPO, 'computer_vision_regression_summary_{}.txt'.format(timestamp), 'w'))
 f.write("EPOCHS: {0}\nSteps per epoch: {1}\nValidation steps: {2}\nVal Split:{3}\nLearning RT:{5}\n\n\n{4}\n\n"
         "=========TRAINING LOG========\n{6}".format(EPOCHS, steps_per_epoch, validation_steps, SPLIT, summary,LR, log))
 f.close()
 
-uploaded = glob.glob(PATH + "Testing\\*.png")
+uploaded = glob.glob(PATH + "\\Testing\\*.png")
 for fn in uploaded:
     img = image.load_img(fn, target_size=(300, 300))
     x = image.img_to_array(img)
