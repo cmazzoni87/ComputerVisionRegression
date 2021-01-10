@@ -24,4 +24,3 @@ if __name__ == "__main__":
     time_series =  {}
     for tg in ['1h', '8h','2h', '4h', '1d']:
         frequency_format(df, tg).to_csv(PATH + 'ts_{0}_{1}.csv'.format('ive', tg), index=False)
-
