@@ -1,7 +1,5 @@
 import pandas as pd
 import os
-import dask.dataframe as dd
-
 PATH = os.path.join(os.path.dirname(__file__), 'TimeSeries')
 
 def frequency_format(df, frequency):
@@ -10,12 +8,10 @@ def frequency_format(df, frequency):
     :param frequency: String time frequency used in method
     :return: New grouped by time frequency DataFrame
     """
-    group_dt = df.groupby(pd.Grouper(key='DateTime', freq=frequency)).sum().reset_index()
-    group_dt['Open'] = group_dt['Open'].replace(to_replace=0, method='ffill')
+    group_dt = df.groupby(pd.Grouper(key='DateTime', freq=frequency)).mean().reset_index()
+    group_dt['Open'] = group_dt['Open'].fillna(0)
     group_dt = group_dt[group_dt['DateTime'].dt.weekday < 5].reset_index(drop=True)
     return group_dt
-
-
 
 if __name__ == "__main__":
     ive_data = 'IVE_tickbidask.txt'

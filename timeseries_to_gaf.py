@@ -8,14 +8,12 @@ import os
 
 #Pass timeseries and create a Gramian Angular Field image
 #Grab timeseries and draw the charts
-def create_gaf(ts): #col_num
+def create_gaf(ts):
     """
     :param ts:
     :return:
     """
     data = dict()
-    # gasf = GramianAngularField(method='summation', image_size=20)
-    # data['gasf'] = gasf.fit_transform(pd.DataFrame(ts).T)[0]  # ts.T)
     gadf = GramianAngularField(method='difference', image_size=ts.shape[0])
     data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0] # ts.T)
     return data
