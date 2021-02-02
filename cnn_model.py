@@ -13,38 +13,11 @@ TESTING = os.path.join(PATH , 'Testing')
 PATH_DOC = os.path.join(os.path.dirname(__file__), 'Documents')
 PATH_OUT = os.path.join(os.path.dirname(__file__), 'Output')
 
+#  Stop training after one non improving Epoch
 callback  = tf.keras.callbacks.EarlyStopping(
     monitor='val_loss', min_delta=0, patience=1, verbose=0, mode='auto',
     baseline=None, restore_best_weights=False)
 
-# model = tf.keras.models.Sequential([
-#     # Note the input shape is the desired size of the image 300x300 with 3 bytes color
-#     # This is the first convolution
-#     Conv2D(32, (3,3), activation='relu', input_shape=(150, 150, 3)),
-#     MaxPooling2D(2, 2),
-#     # The second convolution
-#     Conv2D(32, (3,3), activation='relu'),
-#     MaxPooling2D(2,2),
-#     Dropout(0.2),
-#     # The third convolution
-#     Conv2D(64, (3,3), activation='relu'),
-#     MaxPooling2D(2,2),
-#     Dropout(0.2),
-#     # The fourth convolution
-#     Conv2D(64, (3,3), activation='relu'),
-#     MaxPooling2D(2,2),
-#     Dropout(0.2),
-#     # The fifth convolution
-#     Conv2D(128, (3,3), activation='relu'),
-#     MaxPooling2D(2,2),
-#     Dropout(0.4),
-#     # Flatten the results to feed into a DNN
-#     Flatten(),
-#     # 512 neuron hidden layer
-#     Dense(512, activation='relu'),
-#     Dropout(0.4),
-#     Dense(1, activation='sigmoid')])
-# #
 model = tf.keras.models.Sequential([
     # # This is the first convolution
     Conv2D(32, (3,3), activation='relu', input_shape=(300, 300, 3)),
@@ -53,12 +26,12 @@ model = tf.keras.models.Sequential([
     Conv2D(64, (3,3), activation='relu'),
     Conv2D(64, (3, 3), activation='relu'),
     MaxPooling2D(2,2),
-    Dropout(0.30),
+    Dropout(0.50),
     # # The third convolution
     Conv2D(128, (3, 3), activation='relu'),
     Conv2D(128, (3, 3), activation='relu'),
     MaxPooling2D(2, 2),
-    Dropout(0.30),
+    Dropout(0.50),
     # # Flatten the results to feed into a DNN
     Flatten(),
     # # 1024 neuron hidden layer
@@ -67,7 +40,7 @@ model = tf.keras.models.Sequential([
 
 EPOCHS = 10
 SPLIT = 0.30
-LR = 0.001
+LR = 0.007
 
 model.compile(optimizer=Adam(lr=LR), loss='binary_crossentropy', metrics=['acc'])  #categorical_crossentropy
 # All images will be rescaled by 1./255
@@ -75,14 +48,14 @@ train_validate_datagen = ImageDataGenerator(rescale=1/255, validation_split=SPLI
 train_generator = train_validate_datagen.flow_from_directory(
     IMAGES_PATH,
     target_size=(300, 300),
-    batch_size= 128,
+    batch_size= 20,
     class_mode='binary',
     subset='training') # set as training data
 
 validation_generator = train_validate_datagen.flow_from_directory(
     IMAGES_PATH, # same directory as training data
     target_size=(300, 300),
-    batch_size=128,
+    batch_size=20,
     class_mode='binary',
     subset='validation') # set as validation data
 
@@ -101,7 +74,7 @@ history = model.fit_generator(
       verbose=1,
       validation_data=validation_generator,
       validation_steps=validation_steps
-      # ,callbacks=[callback]
+      ,callbacks=[callback]
         )
 
 timestamp = dt.datetime.now().strftime("%Y%m%d%H%M%S")
