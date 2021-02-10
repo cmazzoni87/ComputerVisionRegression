@@ -40,9 +40,7 @@ def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
         ax.set_yticks([])
         ax.imshow(image, cmap='rainbow', origin='lower')
 
-    if not os.path.exists(os.path.join('GramianAnagularFields', destination)):
-        os.makedirs(os.path.join('GramianAnagularFields', destination))
-    repo = os.path.join('GramianAnagularFields', destination)
+    repo = os.path.join('GramianAnagularFields/TRAIN', destination)
     fig.savefig(os.path.join(repo, image_name))
     plt.close(fig)
 

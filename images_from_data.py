@@ -4,9 +4,12 @@ from multiprocessing import Pool
 import pandas as pd
 import os
 import datetime as dt
+import shutil
+import glob
 
 PATH = os.path.dirname(__file__)
-IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields')
+IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields/TRAIN')
+TEST_PATH = os.path.join(PATH , 'GramianAnagularFields/TEST')
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'TimeSeries')
 
 def data_to_image_preprocess():
@@ -15,11 +18,11 @@ def data_to_image_preprocess():
     """
     ive_data = 'IVE_tickbidask.txt'
     col_name = ['Date', 'Time', 'Open', 'High', 'Low', 'Volume']
-    df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None)
+    df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None).tail(200000)
     # Drop unnecessary data
     df = df.drop(['High', 'Low', 'Volume'], axis=1)
     df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], infer_datetime_format=True)
-    df = df.groupby(pd.Grouper(key='DateTime', freq='1min')).mean().reset_index()
+    df = df.groupby(pd.Grouper(key='DateTime', freq='1h')).mean().reset_index()    #'1min'
     df['Open'] = df['Open'].replace(to_replace=0, method='ffill')
     # Remove non trading days and times
     clean_df = clean_non_trading_times(df)
@@ -54,7 +57,7 @@ def set_gaf_data(df):
     list_dates = dates.apply(str).tolist()
     index = 20
     # Container to store data for the creation of GAF
-    decision_map = {key: [] for key in ['LONG', 'SHORT', 'HOLD']}
+    decision_map = {key: [] for key in ['LONG', 'SHORT']}
     while True:
         if index % 100 == 0:
             print(index)
@@ -79,16 +82,27 @@ def set_gaf_data(df):
     dt_points = dates.shape[0]
     total_short = len(decision_map['SHORT'])
     total_long = len(decision_map['LONG'])
-    total_hold = len(decision_map['HOLD'])
-    images_created = total_short + total_long + total_hold
+    images_created = total_short + total_long
     f = open(os.path.join(PATH, 'preprocessing_summary_{}.txt'.format(timestamp)), 'w')
     f.write("========PREROCESS REPORT========:\nTotal Datapoints: {0}\nTotal Images Created: {1}"
-            "\nTotal LONG positions: {2}\nTotal SHORT positions: {3}\nTotal HOLD positions: {4}".format(dt_points,
-                                                                                                         images_created,
-                                                                                                         total_short,
-                                                                                                         total_long,
-                                                                                                         total_hold))
+            "\nTotal LONG positions: {2}\nTotal SHORT positions: {3}".format(dt_points,
+                                                                             images_created,
+                                                                             total_short,
+                                                                             total_long))
     f.close()
+    cup_of_test_data()
+
+def cup_of_test_data():
+    long_path = os.path.join(IMAGES_PATH, 'LONG')
+    short_path = os.path.join(IMAGES_PATH, 'SHORT')
+    short = glob.glob(short_path + '/*', recursive=False)
+    long = glob.glob(long_path + '/*', recursive=False)
+    test_files = long[-21:-1] + short[-21:-1]
+    for files in test_files:
+        source_tag = files.split('\\')[-2]
+        file_name = files.split('\\')[-1]
+        file_new_name = source_tag + '\\' + file_name
+        shutil.move(files, os.path.join(TEST_PATH, file_new_name))
 
 def trading_action(data, index):
     """
@@ -121,7 +135,8 @@ def generate_gaf(images_data):
 
 
 if __name__ == "__main__":
-    pool = Pool(4)
-    print(dt.datetime.now())
-    pool.apply(data_to_image_preprocess)
-    print(dt.datetime.now())
+    data_to_image_preprocess()
+    # pool = Pool(4)
+    # print(dt.datetime.now())
+    # pool.apply(data_to_image_preprocess)
+    # print(dt.datetime.now())

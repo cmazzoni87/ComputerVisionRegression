@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import os
 PATH = os.path.join(os.path.dirname(__file__), 'TimeSeries')
-# PATH = 'C:\\\\Users\\cmazz\\PycharmProjects\\ComputerVisionRegression\\TimeSeries\\'
 
 def wrapper(args):
    return generate_time_series_image(*args)
