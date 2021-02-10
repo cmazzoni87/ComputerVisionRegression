@@ -18,7 +18,7 @@ def data_to_image_preprocess():
     """
     ive_data = 'IVE_tickbidask.txt'
     col_name = ['Date', 'Time', 'Open', 'High', 'Low', 'Volume']
-    df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None).tail(200000)
+    df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None)
     # Drop unnecessary data
     df = df.drop(['High', 'Low', 'Volume'], axis=1)
     df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], infer_datetime_format=True)
