@@ -135,8 +135,7 @@ def generate_gaf(images_data):
 
 
 if __name__ == "__main__":
-    data_to_image_preprocess()
-    # pool = Pool(4)
-    # print(dt.datetime.now())
-    # pool.apply(data_to_image_preprocess)
-    # print(dt.datetime.now())
+    pool = Pool(4)
+    print(dt.datetime.now())
+    pool.apply(data_to_image_preprocess)
+    print(dt.datetime.now())
