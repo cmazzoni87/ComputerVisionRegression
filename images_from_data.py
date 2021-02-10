@@ -16,6 +16,7 @@ def data_to_image_preprocess():
     """
     :return: None
     """
+    print('PROCESSING DATA')
     ive_data = 'IVE_tickbidask.txt'
     col_name = ['Date', 'Time', 'Open', 'High', 'Low', 'Volume']
     df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None)
@@ -59,8 +60,6 @@ def set_gaf_data(df):
     # Container to store data for the creation of GAF
     decision_map = {key: [] for key in ['LONG', 'SHORT']}
     while True:
-        if index % 100 == 0:
-            print(index)
         if index >= len(list_dates) - 1:
             break
         # Select appropriate timeframe
@@ -75,6 +74,7 @@ def set_gaf_data(df):
         decision = trading_action(data=df, index=list_dates[index])
         decision_map[decision].append(gafs)
         index += 1
+    print('GEMERATING IMAGES')
     # Generate the images from processed data
     generate_gaf(decision_map)
     # Log stuff
@@ -100,6 +100,7 @@ def cup_of_test_data():
     short_path = os.path.join(IMAGES_PATH, 'SHORT')
     short = glob.glob(short_path + '/*', recursive=False)
     long = glob.glob(long_path + '/*', recursive=False)
+    # TAKE LAST 20 ROWS OF EACH FOLDER FOR TESTING
     test_files = long[-21:-1] + short[-21:-1]
     for files in test_files:
         source_tag = files.split('\\')[-2]
@@ -137,8 +138,8 @@ def generate_gaf(images_data):
 
 if __name__ == "__main__":
     pool = Pool(4)
+    print(dt.datetime.now())
     print('CONVERTING TIME-SERIES TO IMAGES')
-    print(dt.datetime.now())
     pool.apply(data_to_image_preprocess)
-    print(dt.datetime.now())
     print('DONE!')
+    print(dt.datetime.now())
