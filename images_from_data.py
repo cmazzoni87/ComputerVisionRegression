@@ -10,7 +10,7 @@ import glob
 PATH = os.path.dirname(__file__)
 IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields/TRAIN')
 TEST_PATH = os.path.join(PATH , 'GramianAnagularFields/TEST')
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'TimeSeries')
+DATA_PATH = os.path.join(PATH, 'TimeSeries')
 
 def data_to_image_preprocess():
     """
