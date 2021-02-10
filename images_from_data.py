@@ -117,10 +117,8 @@ def trading_action(data, index):
     future_close = data[data['DateTime'].dt.date.astype(str) == index]['Open'].iloc[-1]
     if future_open < future_close:
         decision = 'LONG'
-    elif future_open > future_close:
-        decision = 'SHORT'
     else:
-        decision = 'HOLD'
+        decision = 'SHORT'
     return decision
 
 def generate_gaf(images_data):
@@ -139,6 +137,8 @@ def generate_gaf(images_data):
 
 if __name__ == "__main__":
     pool = Pool(4)
+    print('CONVERTING TIME-SERIES TO IMAGES')
     print(dt.datetime.now())
     pool.apply(data_to_image_preprocess)
     print(dt.datetime.now())
+    print('DONE!')
