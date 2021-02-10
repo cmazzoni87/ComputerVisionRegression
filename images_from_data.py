@@ -93,6 +93,9 @@ def set_gaf_data(df):
     cup_of_test_data()
 
 def cup_of_test_data():
+    """
+    :return: None
+    """
     long_path = os.path.join(IMAGES_PATH, 'LONG')
     short_path = os.path.join(IMAGES_PATH, 'SHORT')
     short = glob.glob(short_path + '/*', recursive=False)
