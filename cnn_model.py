@@ -8,7 +8,7 @@ import os
 PATH = os.path.dirname(__file__)
 IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields/TRAIN')
 REPO = os.path.join(PATH , 'Models')
-TESTING = os.path.join(PATH , ' GramianAnagularFields/TEST')
+TESTING = os.path.join(PATH , 'GramianAnagularFields/TEST')
 PATH_DOC = os.path.join(os.path.dirname(__file__), 'Documents')
 PATH_OUT = os.path.join(os.path.dirname(__file__), 'Output')
 
