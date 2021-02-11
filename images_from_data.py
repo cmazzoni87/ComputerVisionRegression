@@ -17,14 +17,14 @@ def data_to_image_preprocess():
     :return: None
     """
     print('PROCESSING DATA')
-    ive_data = 'IVE_tickbidask.txt'
-    col_name = ['Date', 'Time', 'Open', 'High', 'Low', 'Volume']
+    ive_data = 'IBM_adjusted.txt'  # 'IVE_tickbidask.txt'
+    col_name = ['Date', 'Time', 'Open', 'High', 'Low', 'Close', 'Volume']
     df = pd.read_csv(os.path.join(DATA_PATH, ive_data), names=col_name, header=None)
     # Drop unnecessary data
-    df = df.drop(['High', 'Low', 'Volume'], axis=1)
+    df = df.drop(['High', 'Low', 'Volume', 'Open'], axis=1)
     df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], infer_datetime_format=True)
     df = df.groupby(pd.Grouper(key='DateTime', freq='1h')).mean().reset_index()    #'1min'
-    df['Open'] = df['Open'].replace(to_replace=0, method='ffill')
+    df['Close'] = df['Close'].replace(to_replace=0, method='ffill')
     # Remove non trading days and times
     clean_df = clean_non_trading_times(df)
     # Send to slicing
@@ -69,9 +69,11 @@ def set_gaf_data(df):
         for freq in ['1h', '2h', '4h', '1d']:
             group_dt = data_slice.groupby(pd.Grouper(key='DateTime', freq=freq)).mean().reset_index()
             group_dt = group_dt.dropna()
-            gafs.append(group_dt['Open'].tail(20))
+            gafs.append(group_dt['Close'].tail(20))
         # Decide what trading position we should take on that day
-        decision = trading_action(data=df, index=list_dates[index])
+        future_value = df[df['DateTime'].dt.date.astype(str) == list_dates[index]]['Close'].iloc[-1]
+        current_value = data_slice['Close'].iloc[-1]
+        decision = trading_action(future_close=future_value, current_close=current_value)
         decision_map[decision].append(gafs)
         index += 1
     print('GEMERATING IMAGES')
@@ -83,13 +85,18 @@ def set_gaf_data(df):
     total_short = len(decision_map['SHORT'])
     total_long = len(decision_map['LONG'])
     images_created = total_short + total_long
-    f = open(os.path.join(PATH, 'preprocessing_summary_{}.txt'.format(timestamp)), 'w')
-    f.write("========PREROCESS REPORT========:\nTotal Datapoints: {0}\nTotal Images Created: {1}"
+    print("========PREROCESS REPORT========:\nTotal Datapoints: {0}\nTotal Images Created: {1}"
             "\nTotal LONG positions: {2}\nTotal SHORT positions: {3}".format(dt_points,
                                                                              images_created,
                                                                              total_short,
                                                                              total_long))
-    f.close()
+    # f = open(os.path.join(PATH, 'preprocessing_summary_{}.txt'.format(timestamp)), 'w')
+    # f.write("========PREROCESS REPORT========:\nTotal Datapoints: {0}\nTotal Images Created: {1}"
+    #         "\nTotal LONG positions: {2}\nTotal SHORT positions: {3}".format(dt_points,
+    #                                                                          images_created,
+    #                                                                          total_short,
+    #                                                                          total_long))
+    # f.close()
     cup_of_test_data()
 
 def cup_of_test_data():
@@ -101,22 +108,22 @@ def cup_of_test_data():
     short = glob.glob(short_path + '/*', recursive=False)
     long = glob.glob(long_path + '/*', recursive=False)
     # TAKE LAST 20 ROWS OF EACH FOLDER FOR TESTING
-    test_files = long[-21:-1] + short[-21:-1]
+    test_files = long[-31:-1] + short[-31:-1]
     for files in test_files:
         source_tag = files.split('\\')[-2]
         file_name = files.split('\\')[-1]
         file_new_name = source_tag + '\\' + file_name
         shutil.move(files, os.path.join(TEST_PATH, file_new_name))
 
-def trading_action(data, index):
+def trading_action(future_close, current_close):
     """
     :param data: DataFrame
     :param index: Date Index for slicing
     :return: Folder destination as String
     """
-    future_open = data[data['DateTime'].dt.date.astype(str) == index]['Open'].iloc[0]
-    future_close = data[data['DateTime'].dt.date.astype(str) == index]['Open'].iloc[-1]
-    if future_open < future_close:
+    current_close = current_close
+    future_close = future_close
+    if current_close < future_close:
         decision = 'LONG'
     else:
         decision = 'SHORT'
