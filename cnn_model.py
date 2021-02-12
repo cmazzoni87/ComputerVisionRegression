@@ -3,14 +3,25 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 from tensorflow.keras.layers import *
+from data_preprocessing import ensemble_data
 import datetime as dt
+import pandas as pd
 import numpy as np
+import glob
 import os
 
+
+
+def chunker(seq, size, loops):
+    rem = (seq.shape[0] - size)
+    rem_split = rem // loops
+    for i in range(10):
+        yield seq.iloc[(i * rem_split): -(rem - (i * rem_split))]
+
 PATH = os.path.dirname(__file__)
-IMAGES_PATH = os.path.join(PATH , 'GramianAnagularFields/TRAIN')
+IMAGES_PATH = os.path.join(PATH , 'GramianAngularFields/TRAIN')
 REPO = os.path.join(PATH , 'Models')
-TESTING = os.path.join(PATH , 'GramianAnagularFields/TEST')
+TESTING = os.path.join(PATH , 'GramianAngularFields/TEST')
 PATH_DOC = os.path.join(os.path.dirname(__file__), 'Documents')
 PATH_OUT = os.path.join(os.path.dirname(__file__), 'Output')
 
@@ -48,43 +59,35 @@ for j in range(cnn_netwoks):
             Dense(1, activation='sigmoid')]
             ))
     # Compile each model
-    model[j].compile(optimizer=Adam(lr=LR), loss="binary_crossentropy", metrics=["acc"])
+    model[j].compile(optimizer=Adam(lr=LR), loss='binary_crossentropy', metrics=['acc'])
 
 # All images will be rescaled by 1./255
 train_validate_datagen = ImageDataGenerator(rescale=1/255, validation_split=SPLIT) # set validation split
+data_chunks = ensemble_data(cnn_netwoks, IMAGES_PATH)
 for j in range(cnn_netwoks):
-    import glob
-    import os
-
-    files = glob.glob("*cycle*.log")
-    files.sort(key=os.path.getmtime)
-    print("\n".join(files))
-
-
-train_generator = train_validate_datagen.flow_from_directory(
-    IMAGES_PATH,
-    target_size=(300, 300),
-    batch_size= 20,
-    class_mode='binary',
-    subset='training') # set as training data
-
-validation_generator = train_validate_datagen.flow_from_directory(
-    IMAGES_PATH, # same directory as training data
-    target_size=(300, 300),
-    batch_size=20,
-    class_mode='binary',
-    subset='validation') # set as validation data
-
-test_generator = train_validate_datagen.flow_from_directory(
-    TESTING, # same directory as training data
-    target_size=(300, 300),
-    class_mode='binary') # set as validation data
-
-steps_per_epoch = train_generator.n // train_generator.batch_size
-validation_steps = validation_generator.n // validation_generator.batch_size
-learning_rate_reduction = ReduceLROnPlateau(monitor='val_acc', patience=3, verbose=0, factor=0.5, min_lr=0.00001)
-
-for j in range(cnn_netwoks):
+    df = data_chunks[j]
+    train_generator = train_validate_datagen.flow_from_dataframe(
+        dataframe=df,
+        directory=IMAGES_PATH,
+        target_size=(300, 300),
+        x_col="Images",
+        y_col="Labels",
+        batch_size=32,
+        class_mode="binary",
+        subset='training'
+        )
+    validation_generator = train_validate_datagen.flow_from_dataframe(
+        dataframe=df,
+        directory= IMAGES_PATH, # same directory as training data_slice
+        target_size=(300, 300),
+        x_col="Images",
+        y_col="Labels",
+        batch_size=32,
+        class_mode='binary',
+        subset='validation') # set as validation data_slice
+    steps_per_epoch = train_generator.n // train_generator.batch_size
+    validation_steps = validation_generator.n // validation_generator.batch_size
+    learning_rate_reduction = ReduceLROnPlateau(monitor='val_acc', patience=3, verbose=0, factor=0.5, min_lr=0.00001)
     print(f'Individual Net : {j+1}')
     history = model[j].fit_generator(train_generator,
                                 epochs = EPOCHS,
@@ -99,14 +102,65 @@ for j in range(cnn_netwoks):
                                                EPOCHS,
                                                max(history.history['acc']),
                                                max(history.history['val_acc'])))
+
+test_generator = train_validate_datagen.flow_from_directory(
+        TESTING, # same directory as training data_slice
+        target_size=(300, 300),
+        class_mode='binary') # set as validation data_slice
 results = np.zeros((60, 4))
+
 for j in range(cnn_netwoks):
     results = results + model[j].predict(test_generator)
     scores = model[j].evaluate_generator(test_generator, steps=5)
     print("%s: %.2f%%" %(model[j].metrics_names[1], scores[1]*100))
 
-results = np.argmax(results, axis=1)
-print(results)
+# train_generator = train_validate_datagen.flow_from_directory(
+#     IMAGES_PATH,
+#     target_size=(300, 300),
+#     batch_size= 32,
+#     class_mode='binary',
+#     subset='training') # set as training data_slice
+#
+# validation_generator = train_validate_datagen.flow_from_directory(
+#     IMAGES_PATH, # same directory as training data_slice
+#     target_size=(300, 300),
+#     batch_size=32,
+#     class_mode='binary',
+#     subset='validation') # set as validation data_slice
+#
+# test_generator = train_validate_datagen.flow_from_directory(
+#     TESTING, # same directory as training data_slice
+#     target_size=(300, 300),
+#     class_mode='binary') # set as validation data_slice
+#
+# steps_per_epoch = train_generator.n // train_generator.batch_size
+# validation_steps = validation_generator.n // validation_generator.batch_size
+# learning_rate_reduction = ReduceLROnPlateau(monitor='val_acc', patience=3, verbose=0, factor=0.5, min_lr=0.00001)
+#
+# for j in range(cnn_netwoks):
+#     print(f'Individual Net : {j+1}')
+#     history = model[j].fit_generator(train_generator,
+#                                 epochs = EPOCHS,
+#                                 steps_per_epoch = steps_per_epoch,
+#                                 validation_data = validation_generator,
+#                                 callbacks=[learning_rate_reduction],
+#                                 verbose=0)
+#     print("CNN Model {0:d}: "
+#           "Epochs={1:d}, "
+#           "Training Accuracy={2:.5f}, "
+#           "Validation Accuracy={3:.5f}".format(j + 1,
+#                                                EPOCHS,
+#                                                max(history.history['acc']),
+#                                                max(history.history['val_acc'])))
+# results = np.zeros((60, 4))
+# for j in range(cnn_netwoks):
+#     results = results + model[j].predict(test_generator)
+#     scores = model[j].evaluate_generator(test_generator, steps=5)
+#     print("%s: %.2f%%" %(model[j].metrics_names[1], scores[1]*100))
+#
+# results = np.argmax(results, axis=1)
+# print(results)
+
 
 
 # #  Stop training after one non improving Epoch

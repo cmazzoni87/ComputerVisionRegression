@@ -2,7 +2,7 @@ import os
 
 print('Creating Directories:')
 PATH = os.path.dirname(__file__)
-GAF = os.path.join(PATH , 'GramianAnagularFields')
+GAF = os.path.join(PATH , 'GramianAngularFields')
 TRAIN_PATH = os.path.join(GAF , 'TRAIN')
 TRAIN_LONG = os.path.join(TRAIN_PATH , 'LONG')
 TRAIN_SHORT = os.path.join(TRAIN_PATH , 'SHORT')
