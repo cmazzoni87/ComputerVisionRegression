@@ -92,24 +92,6 @@ def set_gaf_data(df):
                                                                            images_created,
                                                                            total_short,
                                                                            total_long))
-    cup_of_test_data()
-
-
-def cup_of_test_data():
-    """
-    :return: None
-    """
-    long_path = os.path.join(IMAGES_PATH, 'LONG')
-    short_path = os.path.join(IMAGES_PATH, 'SHORT')
-    short = glob.glob(short_path + '/*', recursive=False)
-    long = glob.glob(long_path + '/*', recursive=False)
-    # TAKE LAST 20 ROWS OF EACH FOLDER FOR TESTING
-    test_files = long[-31:-1] + short[-31:-1]
-    for files in test_files:
-        source_tag = files.split('\\')[-2]
-        file_name = files.split('\\')[-1]
-        file_new_name = source_tag + '\\' + file_name
-        shutil.move(files, os.path.join(TEST_PATH, file_new_name))
 
 
 def trading_action(future_close, current_close):
