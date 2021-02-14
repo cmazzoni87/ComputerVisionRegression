@@ -8,6 +8,7 @@ import datetime as dt
 import os
 
 
+#  Ensemble CNN network to train a CNN model on GAF images labeled Long and Short
 PATH = os.path.dirname(__file__)
 IMAGES_PATH = os.path.join(PATH, 'GramianAngularFields/TRAIN')
 REPO = os.path.join(PATH, 'Models')

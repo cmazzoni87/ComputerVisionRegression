@@ -1,13 +1,14 @@
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid, AxesGrid
+from mpl_toolkits.axes_grid1 import ImageGrid
 from pyts.image import GramianAngularField
 import pandas as pd
 import os
+matplotlib.use('Agg')
 
-#Pass timeseries and create a Gramian Angular Field image
-#Grab timeseries and draw the charts
+
+# Pass times-eries and create a Gramian Angular Field image
+# Grab times-eries and draw the charts
 def create_gaf(ts):
     """
     :param ts:
@@ -15,10 +16,11 @@ def create_gaf(ts):
     """
     data = dict()
     gadf = GramianAngularField(method='difference', image_size=ts.shape[0])
-    data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0] # ts.T)
+    data['gadf'] = gadf.fit_transform(pd.DataFrame(ts).T)[0]
     return data
 
-#create images of the bundle that we pass
+
+# Create images of the bundle that we pass
 def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
     """
     :param X_plots:
@@ -43,4 +45,3 @@ def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
     repo = os.path.join('GramianAngularFields/TRAIN', destination)
     fig.savefig(os.path.join(repo, image_name))
     plt.close(fig)
-

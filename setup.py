@@ -1,5 +1,6 @@
 import os
 
+# Creates directories and sub directories needed for the project to run
 print('Creating Directories:')
 PATH = os.path.dirname(__file__)
 GAF = os.path.join(PATH , 'GramianAngularFields')

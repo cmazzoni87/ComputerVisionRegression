@@ -4,8 +4,7 @@ from multiprocessing import Pool
 import pandas as pd
 import os
 import datetime as dt
-import shutil
-import glob
+
 
 PATH = os.path.dirname(__file__)
 IMAGES_PATH = os.path.join(PATH, 'GramianAngularFields/TRAIN')
