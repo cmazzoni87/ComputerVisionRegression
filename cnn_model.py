@@ -111,8 +111,8 @@ for j in range(cnn_networks):
     summary = "\n".join(string_list)
     logging = ['{0}: {1}'.format(key, val[-1]) for key, val in history.history.items()]
     log = 'Results:\n' + '\n'.join(logging)
-    model[j].save(os.path.join(REPO, 'computer_vision_model_{0}_of_{1}_{2}.h5'.format(TIMESTAMP, j, cnn_networks)))
-    f = open(os.path.join(REPO, 'computer_vision_summary_{0}_of_{1}_{2}.h5'.format(TIMESTAMP, j, cnn_networks)), 'w')
+    model[j].save(os.path.join(REPO, 'computer_vision_model_{0}_{1}_of_{2}.h5'.format(TIMESTAMP, j+1, cnn_networks)))
+    f = open(os.path.join(REPO, 'computer_vision_summary_{0}_{1}_of_{2}.h5'.format(TIMESTAMP, j+1, cnn_networks)), 'w')
     f.write("EPOCHS: {0}\nSteps per epoch: {1}\nValidation steps: {2}\nVal Split:{3}\nLearning RT:{5}\n\n\n{4}"
             "\n\n=========TRAINING LOG========\n{6}".format(EPOCHS, steps_per_epoch, validation_steps,  SPLIT, summary,
                                                             LR, log))
