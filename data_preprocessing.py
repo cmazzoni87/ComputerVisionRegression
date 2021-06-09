@@ -1,9 +1,10 @@
 import pandas as pd
 import glob
+from typing import *
 
 
 # Chunks DataFrames in a way that part of the data points is found in the previous chunk
-def chunker(seq, size, loops):
+def chunker(seq: pd.DataFrame, size: int, loops: int) -> Generator:
     """
     :param seq: As DataFrame
     :param size: As Integer
@@ -16,7 +17,7 @@ def chunker(seq, size, loops):
         yield seq.iloc[(i * rem_split): -(rem - (i * rem_split))]
 
 
-def ensemble_data(networks_chunks, path):
+def ensemble_data(networks_chunks: int, path: str) -> List[pd.DataFrame]:
     """
     :param networks_chunks: As Integer
     :param path: As String

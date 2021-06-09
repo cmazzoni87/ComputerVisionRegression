@@ -4,12 +4,14 @@ from mpl_toolkits.axes_grid1 import ImageGrid
 from pyts.image import GramianAngularField
 import pandas as pd
 import os
+from typing import *
+
 matplotlib.use('Agg')
 
 
 # Pass times-eries and create a Gramian Angular Field image
 # Grab times-eries and draw the charts
-def create_gaf(ts):
+def create_gaf(ts) -> Dict[str, Any]:
     """
     :param ts:
     :return:
@@ -21,7 +23,7 @@ def create_gaf(ts):
 
 
 # Create images of the bundle that we pass
-def create_images(X_plots, image_name, destination, image_matrix=(2, 2)):
+def create_images(X_plots: Any, image_name: str, destination: str, image_matrix: tuple =(2, 2)) -> None:
     """
     :param X_plots:
     :param image_name:

@@ -4,6 +4,7 @@ from multiprocessing import Pool
 import pandas as pd
 import os
 import datetime as dt
+from typing import *
 
 
 PATH = os.path.dirname(__file__)
@@ -12,7 +13,7 @@ TEST_PATH = os.path.join(PATH, 'GramianAngularFields/TEST')
 DATA_PATH = os.path.join(PATH, 'TimeSeries')
 
 
-def data_to_image_preprocess():
+def data_to_image_preprocess() -> None:
     """
     :return: None
     """
@@ -31,7 +32,7 @@ def data_to_image_preprocess():
     set_gaf_data(clean_df)
 
 
-def clean_non_trading_times(df):
+def clean_non_trading_times(df: pd.DataFrame) -> pd.DataFrame:
     """
     :param df: Data with weekends and holidays
     :return trading_data:
@@ -50,7 +51,7 @@ def clean_non_trading_times(df):
     return trading_data
 
 
-def set_gaf_data(df):
+def set_gaf_data(df: pd.DataFrame) -> None:
     """
     :param df: DataFrame data_slice
     :return: None
@@ -93,7 +94,7 @@ def set_gaf_data(df):
                                                                            total_long))
 
 
-def trading_action(future_close, current_close):
+def trading_action(future_close: int, current_close: int) -> str:
     """
     :param future_close: Integer
     :param current_close: Integer
@@ -108,7 +109,7 @@ def trading_action(future_close, current_close):
     return decision
 
 
-def generate_gaf(images_data):
+def generate_gaf(images_data: Dict[str, pd.DataFrame]) -> None:
     """
     :param images_data:
     :return:
